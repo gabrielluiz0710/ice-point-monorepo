@@ -1,0 +1,83 @@
+:root {
+
+    --first-color: hsl(0, 0%, 100%);
+    --first-color-light: hsl(0, 0%, 97%);
+    --first-color-alt: hsl(0, 0%, 89%);
+    --second-color: #FE758F;
+    --dark-color: hsl(212, 40%, 12%);
+    --white-color: hsl(212, 4%, 95%);
+    --body-color: hsl(212, 42%, 15%);
+    --container-color: #FE758F;
+  
+    /*========== Font and typography ==========*/
+    /*.5rem = 8px | 1rem = 16px ...*/
+    --body-font: "Montserrat";
+    --h2-font-size: 1.25rem;
+    --normal-font-size: 1rem;
+  }
+  
+
+.swiper-button-prev,
+.swiper-button-next {
+  font-size: 3rem;
+  color: #000000;
+  display: none;
+  font-weight: 900;
+}
+
+.swiper-button-prev {
+  left: 0;
+}
+
+.swiper-button-next {
+  right: 0;
+}
+
+.swiper-pagination-bullet {
+  background-color: hsl(0, 0%, 84%);
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--container-color);
+}
+
+/* For medium devices */
+@media screen and (min-width: 728px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: block;
+  }
+}
+
+/* For large devices */
+@media screen and (min-width: 1120px) {
+  
+}
+
+.swiper-button-prev {
+  left: -1rem;
+}
+.swiper-button-next {
+  right: -1rem;
+}
+
+.content {
+  position: relative;
+  overflow: visible; /* Permite que os elementos transbordem do contêiner */
+}
+
+.swiper-button-prev, .swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10; /* Garante que os botões fiquem acima do slider */
+}
+
+.swiper-button-prev {
+  left: -1rem; /* Move o botão anterior para fora do contêiner */
+}
+
+.swiper-button-next {
+  right: -1rem; /* Move o botão próximo para fora do contêiner */
+}

@@ -1,0 +1,181 @@
+:root{
+    --color-branco: #ffffff;
+    --color-azul: #19c5cb;
+    --color-rosa: #FE758F;
+    --color-cinza: #dddddd;
+    --color-botao: #198ca0;
+    --color-dark5: #343434;
+    --color-rosa_escuro: #da6076;
+}
+/* Para navegadores baseados em Webkit (Chrome, Safari, Opera) */
+::-webkit-scrollbar {
+    width: 15px; /* largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+    background: #19c5cb; /* cor de fundo da barra de rolagem */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #198ca0; /* cor da alça da barra de rolagem */
+    border-radius: 10px; /* borda arredondada */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #146d7d; /* cor da alça da barra de rolagem ao passar o mouse */
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    scrollbar-color: #2498b5 #2AB1D3; /* cor da alça da barra de rolagem e cor de fundo da barra de rolagem */
+    scrollbar-width: thin; /* largura da barra de rolagem */
+    font-family: 'Montserrat';
+    background-color: white;
+    color: black;
+}
+
+.card__container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.card__container a {
+  text-decoration: none;
+}
+
+
+.card__container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/*=============== CARD ===============*/
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.card__container {
+  padding-block: 5rem;
+}
+
+.card__content {
+  margin-inline: 1.75rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.card__article {
+  width: 300px; /* Remove after adding swiper js */
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.card__image {
+  position: relative;
+  background-color: var(--first-color-light);
+  padding-top: 1.5rem;
+  margin-bottom: -.75rem;
+  border-radius: 20px;
+}
+
+.card__data {
+  margin-bottom: 30px;
+  margin-top: -20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  text-align: center;
+  align-items: center; /* Centraliza horizontalmente */
+  display: flex;
+  flex-direction: column; /* Para alinhar elementos em coluna */
+  height: 220px;
+  justify-content: center;
+}
+
+.card_back{
+  background-color: var(--container-color);
+  z-index: 10;
+  position: relative;
+  border-radius: 1rem;
+}
+
+
+.card__img {
+  width: 180px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
+}
+
+.card__shadow {
+  width: 200px;
+  height: 200px;
+  background-color: var(--first-color-alt);
+  border-radius: 50%;
+  position: absolute;
+  top: 3.75rem;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  filter: blur(45px);
+}
+
+.card__name {
+  font-size: 20px;
+  color: var(--white-color);
+  margin-bottom: .75rem;
+  font-weight: 700;
+  font-family: 'Montserrat';
+}
+
+.card__description {
+  font-weight: 500;
+  margin-bottom: 1.75rem;
+}
+
+.card__button {
+  display: inline-block;
+  background-color: var(--first-color);
+  padding: .75rem 1.5rem;
+  border-radius: .25rem;
+  color: var(--dark-color);
+  font-weight: 600;
+}
+
+.card__container h1{
+  font-family: 'Montserrat';
+  font-weight: 900;
+  color: black;
+  font-size: 40px;
+  text-align: center;
+  margin-top: 80px;
+}
+
+.card__container h2{
+  font-family: 'Montserrat';
+  font-weight: 400;
+  color: black;
+  font-size: 20px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+@media screen and (max-width: 320px) {
+  .card__container h1{
+    margin-top: 20px;
+  }
+
+}
+@media screen and (min-width: 768px) {
+  .card__content {
+    margin-inline: 3rem;
+  }
+}

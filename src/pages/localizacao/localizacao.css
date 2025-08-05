@@ -1,0 +1,334 @@
+:root{
+    --color-branco: #ffffff;
+    --color-azul: #19c5cb;
+    --color-rosa: #FE758F;
+    --color-cinza: #dddddd;
+    --color-botao: #198ca0;
+    --color-dark5: #343434;
+    --color-rosa_escuro: #da6076;
+}
+/* Para navegadores baseados em Webkit (Chrome, Safari, Opera) */
+::-webkit-scrollbar {
+    width: 15px; /* largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+    background: #19c5cb; /* cor de fundo da barra de rolagem */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #198ca0; /* cor da alça da barra de rolagem */
+    border-radius: 10px; /* borda arredondada */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #146d7d; /* cor da alça da barra de rolagem ao passar o mouse */
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    scrollbar-color: #2498b5 #2AB1D3; /* cor da alça da barra de rolagem e cor de fundo da barra de rolagem */
+    scrollbar-width: thin; /* largura da barra de rolagem */
+    font-family: 'Montserrat';
+    background-color: var(--color-white);
+    color: var(--color-white);
+}
+.img_logo_header{
+    width: 150px;
+}
+.icon_header{
+    width: 20px;
+}
+.redes-sociais {
+    align-items: center;
+}
+.redes-sociais a {
+    margin-right: 20px;
+}
+.header,
+.navigation_header{
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+}
+.header{
+    background-color: var(--color-rosa);
+    justify-content: space-between;
+    padding: 0 10%;
+    height: 5em;
+    box-shadow: 1px 1px 4px var(--color-rosa_escuro);
+    align-items: center;
+}
+.navigation_header{
+    gap: 3em;
+    z-index: 2;
+    transition: 1s ease; 
+}
+.content{
+    flex: 2;
+    margin-right: 10%;
+    margin-left: 10%;
+}
+.navigation_header a{
+    text-decoration: none;
+    color: var(--color-branco);
+    transition: 1s;
+    font-weight: bold;
+}
+.navigation_header a:hover{
+    color: var(--color-cinza);
+}
+.btn_icon_header{
+    background: transparent;
+    border: none;
+    color: var(--color-branco);
+    cursor: pointer;
+    display: none;
+    transition: 1s;
+}
+@media screen and (max-width: 980px) {
+    .navigation_header{
+        position: absolute;
+        flex-direction: column !important;
+        top: 0;
+        background: var(--color-rosa_escuro);
+        height: 100%;
+        width: 70%;
+        padding: 2em;
+        animation-duration: 1s;
+        margin-left: -100vw;
+        transition: margin-left 0.3s ease; 
+    }
+    .btn_icon_header{
+        display: block;
+        text-align: left;
+    }
+}
+
+@keyframes showSidebar {
+    from {margin-left: -100vw;}
+    to {margin-left: -10vw;}
+}
+body.no-scroll {
+    overflow: hidden;
+}
+
+.navigation_header.active {
+    animation: showSidebar 1s forwards;
+    margin-left: 0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat';
+    font-weight: 500;
+}
+footer{
+    background-color: #23b1ca;
+    padding: 50px 0;
+}
+.container-footer{
+    max-width: 1400px;
+    padding: 0 4%;
+    margin: auto;
+}
+.row-footer{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.footer-col{
+    width: 25%;
+    padding: 0 15px;
+}
+.footer-col h4{
+    font-size: 22px;
+    color: white;
+    margin-bottom: 20px;
+    font-weight: bolder;
+    position: relative;
+    text-transform: uppercase;
+}
+.footer-col ul{
+    list-style: none;
+}
+.footer-col ul li{
+    margin: 10px 0;
+}
+.footer-col ul li a{
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+    font-weight: 300;
+    display: block;
+    transition: all 0.3s ease;
+}
+.footer-col ul li a:hover{
+    color: #cecdcd;
+    padding-left: 10px;
+}
+.footer-col{
+    margin-top: 30px;
+}
+.medias-socias{
+    margin-top: 10px;
+}
+.footer-col .medias-socias a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    margin: 0 10px 10px 0;
+    text-decoration: none;
+    border-radius: 50%;
+    color: white;
+    border: 1px solid white;
+    transition: all 0.5s ease;
+}
+.footer-col .medias-socias a i{
+    font-size: 20px;
+}
+
+.footer-col .medias-socias a:hover{
+    color: #198ca0;
+    background-color: white;
+}
+.footer-col .form-sub input{
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    outline: none;
+    border: 1px solid white;
+    color: white;
+    background-color: #198ca0;
+}
+.footer-col .form-sub input::placeholder{
+    color: white;
+}
+.footer-col .form-sub button{
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px; 
+    font-size: 17px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: #198ca0;
+    border-radius: 3px;
+    font-weight: bold;
+    background-color: white;        
+}
+/* Responsivo */
+@media (max-width: 800px) {
+    .footer-col{
+        width: 50%;
+        margin-bottom: 30px;
+    }
+}
+@media (max-width:600px) {
+    .footer-col{
+        width: 100%;
+    }
+}
+
+.loc{
+    display: flex;
+}
+
+.area-site{
+    width: 50%;
+    flex: 1;
+}
+
+.area-mapa{
+    width: 50%;
+    flex: 1;
+    background-color: black;
+}
+
+.redireciona-site{
+    margin-top: 60px;
+    margin-bottom: 60px;
+    margin-left: 15%;
+}
+
+.redireciona-site p, 
+.redireciona-site p a {
+    font-family: 'Montserrat';
+    color: #888888;
+    text-decoration: none; /* Remove o sublinhado dos links */
+    transition: color 0.3s;
+}
+
+.redireciona-site p a:hover {
+    color: #19c5cb;
+}
+
+.texto{
+    margin-left: 15%;
+    margin-right: 5%;
+}
+
+.texto h1{
+    font-family: 'Montserrat';
+    font-weight: bolder;
+}
+
+.texto p{
+    font-family: 'Montserrat';
+    margin-top: 15px;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.texto h2, .texto h2 a{
+    margin-top: 50px;
+    font-weight: 700;
+    font-size: 25px;
+}
+
+.texto h3 a, .texto h3{
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+/* Mantém o estilo padrão */
+.texto h2 a, .texto h3 a {
+    font-family: 'Montserrat';
+    text-decoration: none;
+    color: black;
+    transition: color 0.3s;
+}
+
+/* Aplica a cor quando um link é hoverado */
+.texto h2 a:hover, .texto h3 a:hover {
+    color: #19c5cb;
+}
+
+/* Força o estilo para o outro link ao passar o mouse */
+.texto h2 a:hover ~ h3 a, .texto h3 a:hover ~ h2 a {
+    color: #19c5cb;
+}
+
+
+.texto h4{
+    font-family: 'Montserrat';
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+.linha{
+    margin-top: 30px;
+    background-color: black;
+    height: 1.5px;
+    border-radius: 5px;
+    margin-right: 2%;
+    margin-left: 10%;
+    margin-bottom: 30px;
+}
