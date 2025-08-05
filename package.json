@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "mkdir public && cp -r app-principal public/ && cp -r sabores-page public/"
+    "build": "mkdir -p public/sabores && cp -r app-principal/. public/ && cp -r sabores-page/. public/sabores/"
   }
 }
