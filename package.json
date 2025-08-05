@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "echo 'Build step not needed, files are static'"
+  }
+}
