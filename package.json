@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "echo 'Build step not needed, files are static'"
+    "build": "mkdir public && cp -r app-principal public/ && cp -r sabores-page public/"
   }
 }
