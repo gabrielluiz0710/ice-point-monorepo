@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "cd app-principal && npm install && npm run build && cd .. && rm -rf public && mv app-principal/build public && mkdir -p public/sabores && cp -r sabores-page/. public/sabores/"
+    "build": "cd app-vite && npm install && npm run build && cd .. && rm -rf public && mv app-vite/dist public && mkdir -p public/sabores && cp -r sabores-lp/. public/sabores/"
   }
 }
