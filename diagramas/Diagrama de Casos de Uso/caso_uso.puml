@@ -1,0 +1,71 @@
+@startuml IcePoint - Casos de Uso
+' Define a direção do diagrama para melhor organização
+left to right direction
+
+' Define os atores
+actor Cliente
+actor Funcionário
+actor Admin
+
+' Cria o retângulo que representa os limites do sistema
+rectangle "Sistema da Sorveteria" {
+  ' -- Casos de Uso do Cliente --
+  usecase "Autenticar-se no Sistema" as (UC_Auth)
+  usecase "Gerenciar Conta\n(Endereço, Senha)" as (UC_ManageProfile)
+  usecase "Visualizar Produtos" as (UC_ViewProducts)
+  usecase "Fazer Encomenda" as (UC_CreateOrder)
+  usecase "Visualizar Histórico\nde Encomendas" as (UC_ViewHistory)
+  usecase "Repetir Encomenda" as (UC_RepeatOrder)
+
+  ' -- Casos de Uso do Funcionário --
+  usecase "Gerenciar Tarefas\n(Visualizar, Marcar como Concluída)" as (UC_ManageTasks)
+  usecase "Gerenciar Encomendas\n(Aprovar, Consultar)" as (UC_ManageOrders)
+  usecase "Solicitar Folga" as (UC_RequestDayoff)
+  usecase "Bater Ponto" as (UC_ClockIn)
+
+  ' -- Casos de Uso do Admin --
+  usecase "Gerenciar Funcionários" as (UC_ManageEmployees)
+  usecase "Gerenciar Catálogo\n(Produtos e Carrinhos)" as (UC_ManageCatalog)
+  usecase "Gerenciar Tarefas\n(Cadastrar, Atribuir)" as (UC_AssignTasks)
+  usecase "Gerenciar Folgas\n(Aprovar, Recusar)" as (UC_ManageDayoffs)
+  usecase "Gerar Relatórios\n(Vendas, Horas Extras)" as (UC_GenerateReports)
+  usecase "Calcular Folha de Pagamento" as (UC_CalculatePayroll)
+}
+
+' -- Define as Relações --
+
+' Generalização (Herança): Admin é um tipo de Funcionário
+Funcionário <|-- Admin
+
+' Relações do Cliente
+Cliente --> (UC_ViewProducts)
+Cliente --> (UC_CreateOrder)
+Cliente --> (UC_ViewHistory)
+Cliente --> (UC_ManageProfile)
+
+' Relações do Funcionário (o Admin herda estas)
+Funcionário --> (UC_ManageTasks)
+Funcionário --> (UC_ManageOrders)
+Funcionário --> (UC_RequestDayoff)
+Funcionário --> (UC_ClockIn)
+
+' Relações específicas do Admin
+Admin --> (UC_ManageEmployees)
+Admin --> (UC_ManageCatalog)
+Admin --> (UC_AssignTasks)
+Admin --> (UC_ManageDayoffs)
+Admin --> (UC_GenerateReports)
+Admin --> (UC_CalculatePayroll)
+
+' Relações de Inclusão (<<include>>) e Extensão (<<extend>>)
+(UC_ManageProfile) ..> (UC_Auth) : <<include>>
+(UC_CreateOrder) ..> (UC_Auth) : <<include>>
+(UC_ViewHistory) ..> (UC_Auth) : <<include>>
+(UC_ManageOrders) ..> (UC_Auth) : <<include>>
+(UC_ManageTasks) ..> (UC_Auth) : <<include>>
+(UC_RequestDayoff) ..> (UC_Auth) : <<include>>
+(UC_ClockIn) ..> (UC_Auth) : <<include>>
+
+(UC_RepeatOrder) .> (UC_ViewHistory) : <<extend>>
+
+@enduml

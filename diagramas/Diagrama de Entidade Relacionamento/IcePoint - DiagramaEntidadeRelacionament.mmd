@@ -1,0 +1,127 @@
+---
+title: Diagrama de Entidade-Relacionamento - Ice Point Sorveteria
+---
+erDiagram
+	direction TB
+	USUARIOS {
+    int id PK "Identificador único"
+    varchar nome "Nome completo"
+    varchar email UK "Email único para login"
+    varchar senha "Senha criptografada"
+    varchar telefone
+    date data_nascimento
+    ENUM tipo "CLIENTE, FUNCIONARIO, ADMIN"
+    varchar matricula "Nullable"
+    varchar cargo "Nullable"
+    date data_admissao "Nullable"
+    datetime data_cadastro
+}
+
+ENDERECOS {
+    int id PK
+    int usuario_id FK "FK para Usuarios.id"
+    varchar logradouro
+    varchar numero
+    varchar complemento "Nullable"
+    varchar bairro
+    varchar cidade
+    varchar cep
+    bool principal "Indica endereço principal"
+}
+
+PRODUTOS {
+    int id PK
+    varchar nome
+    text descricao
+    ENUM tipo "PICOLE_FRUTA, PICOLE_LEITE, etc."
+    decimal preco_unitario
+    bool disponivel
+}
+
+CARRINHOS {
+    int id PK
+    varchar identificacao "Ex: Carrinho 01"
+    int capacidade "Quantos picolés cabem"
+    ENUM status "DISPONIVEL, EM_USO, MANUTENCAO"
+}
+
+ENCOMENDAS {
+    int id PK
+    int cliente_id FK "FK para Usuarios.id"
+    int carrinho_id FK "FK para Carrinhos.id, Nullable"
+    datetime data_solicitacao
+    datetime data_entrega
+    decimal valor_total
+    ENUM status "PENDENTE, APROVADO, etc."
+}
+
+ENCOMENDA_ITENS {
+    int id PK
+    int encomenda_id FK "FK para Encomendas.id"
+    int produto_id FK "FK para Produtos.id"
+    int quantidade
+    decimal preco_unitario_congelado "Preço no momento da compra"
+}
+
+TAREFAS {
+    int id PK
+    varchar titulo
+    text descricao
+    datetime data_criacao
+    date data_limite
+    ENUM recorrencia "NENHUMA, DIARIA, etc."
+    ENUM status "PENDENTE, CONCLUIDA, etc."
+    int criador_id FK "FK para Usuarios.id (Admin)"
+}
+
+TAREFA_FUNCIONARIOS {
+    int tarefa_id FK "FK para Tarefas.id"
+    int funcionario_id FK "FK para Usuarios.id"
+}
+
+REGISTROS_PONTO {
+    int id PK
+    int funcionario_id FK "FK para Usuarios.id"
+    datetime data_hora_entrada
+    datetime data_hora_saida "Nullable"
+}
+
+AGENDAMENTOS_FOLGA {
+    int id PK
+    int solicitante_id FK "FK para Usuarios.id"
+    int aprovador_id FK "FK para Usuarios.id, Nullable"
+    date data_folga
+    ENUM status "SOLICITADA, APROVADA, RECUSADA"
+}
+
+LANCAMENTOS_FOLHA {
+    int id PK
+    int funcionario_id FK "FK para Usuarios.id"
+    int produto_id FK "FK para Produtos.id"
+    int quantidade
+    decimal valor_desconto "Valor a descontar do salário"
+    date data_lancamento
+    text observacao "Nullable"
+}
+
+%% Relacionamentos
+USUARIOS ||--|{ ENDERECOS : "possui"
+USUARIOS ||--|{ ENCOMENDAS : "realiza (como Cliente)"
+USUARIOS ||--|{ REGISTROS_PONTO : "registra (como Funcionário)"
+USUARIOS ||--|{ AGENDAMENTOS_FOLGA : "solicita (como Funcionário)"
+USUARIOS |o--|{ AGENDAMENTOS_FOLGA : "aprova (como Admin)"
+USUARIOS |o--|{ TAREFAS : "cria (como Admin)"
+USUARIOS ||--|{ LANCAMENTOS_FOLHA : "tem desconto de (como Funcionário)"
+
+ENCOMENDAS }o--|| CARRINHOS : "pode alugar"
+ENCOMENDAS ||--|{ ENCOMENDA_ITENS : "contém"
+PRODUTOS ||--|{ ENCOMENDA_ITENS : "é um item em"
+
+TAREFAS ||--|{ TAREFA_FUNCIONARIOS : "é atribuída para"
+USUARIOS ||--|{ TAREFA_FUNCIONARIOS : "executa (como Funcionário)"
+
+LANCAMENTOS_FOLHA }o--|| PRODUTOS : "refere-se a"
+
+%% Estilização para destacar tabelas de junção
+style ENCOMENDA_ITENS color:#FFF,stroke:#FF8C00,stroke-width:2px,fill:#FFDAB9
+style TAREFA_FUNCIONARIOS color:#FFF,stroke:#4682B4,stroke-width:2px,fill:#B0E0E6

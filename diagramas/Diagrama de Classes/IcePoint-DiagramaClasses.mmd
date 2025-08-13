@@ -1,0 +1,102 @@
+---
+config:
+  layout: dagre
+---
+classDiagram
+direction TB
+    class Usuario {
+	    -id: int
+	    -nome: string
+	    -email: string
+	    -senha: string
+	    -dataCadastro: date
+	    +fazerLogin(email, senha) : bool
+	    +fazerLogout() : void
+	    +alterarSenha(senhaAntiga, senhaNova) : bool
+    }
+    class Cliente {
+	    -telefone: string
+	    -endereco: Endereco
+	    +visualizarEncomendas() : list~Encomenda~
+	    +fazerEncomenda(itens, local) : Encomenda
+	    +cancelarEncomenda(idEncomenda) : bool
+    }
+    class Funcionario {
+	    -matricula: int
+	    -cargo: string
+	    -dataAdmissao: date
+	    +verAtividadesDoMes() : list~Atividade~
+	    +escolherFolga(data) : bool
+	    +visualizarEncomendasPendentes() : list~Encomenda~
+    }
+    class Owner {
+	    +gerenciarFuncionarios(acao, dadosFuncionario) : bool
+	    +cadastrarAtividade(desc, data, idFunc) : Atividade
+	    +gerenciarProdutos(acao, dadosProdutos) : bool
+	    +verRelatorioVendas() : list~Relatorio~
+        +aprovarFolga(idAgendamento): bool
+    }
+    class Endereco {
+	    -logradouro: string
+	    -numero: string
+	    -bairro: string
+	    -cidade: string
+	    -cep: string
+    }
+    class Encomenda {
+	    -id: int
+	    -data: datetime
+	    -localEntrega: string
+	    -valorTotal: float
+	    -status: string
+	    +calcularValorTotal() : float
+	    +adicionarItem(produto, quantidade) : void
+	    +removerItem(idItem) : void
+    }
+    class ItemDaEncomenda {
+	    -quantidade: int
+	    -precoUnitario: float
+    }
+    class Produto {
+	    -id: int
+	    -nome: string
+	    -descricao: string
+	    -preco: float
+	    -disponivel: bool
+	    +atualizarEstoque(qtd) : void
+    }
+    class Atividade {
+	    -id: int
+	    -descricao: string
+	    -dataAtribuicao: date
+	    -dataLimite: date
+	    -status: string
+	    +marcarComoConcluida(idAtv) : bool
+    }
+    class AgendamentoFolga {
+	    -id: int
+	    -dataFolga: date
+	    -status: string
+    }
+    class Relatorio {
+	    -id: int
+	    -tipo: string
+	    -dataGeracao: date
+	    -dados: object
+    }
+
+	<<Abstract>> Usuario
+
+    Usuario <|-- Cliente
+    Usuario <|-- Funcionario
+    Funcionario <|-- Owner
+    Cliente "1" -- "1" Endereco : possui
+    Cliente "1" -- "0..*" Encomenda : faz
+    Encomenda "1" -- "1..*" ItemDaEncomenda : contem
+    ItemDaEncomenda "1" -- "1" Produto : refere-se a
+    Owner "1" -- "0..*" Atividade : cadastra
+    Funcionario "1" -- "0..*" Atividade : executa
+    Funcionario "1" -- "0..*" AgendamentoFolga : solicita
+    Owner "1" -- "0..*" AgendamentoFolga : aprova
+    Owner "1" ..> "0..*" Relatorio : gera
+    Funcionario "1..*" -- "1..*" Owner : gerenciado por

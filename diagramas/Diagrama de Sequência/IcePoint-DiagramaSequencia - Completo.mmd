@@ -1,0 +1,399 @@
+Cenario 1.1: Cliente faz uma encomenda
+sequenceDiagram
+    actor A1 as Cliente
+    participant P1 as :InterfacePortal
+    participant P2 as :ControladorEncomenda
+    participant P3 as :Encomenda
+    participant P4 as :Produto
+    participant P5 as :ServicoExterno
+    participant P6 as :RepositorioEncomenda
+
+    autonumber
+
+    A1->>P1: Clica em "Fazer Encomenda"
+    P1->>P2: iniciarNovaEncomenda()
+    P2->>P4: listarDisponiveis()
+    P4-->>P2: listaDeProdutos
+    P2-->>P1: exibirPaginaDeProdutos(lista)
+    P1-->>A1: Mostra a lista de produtos
+
+    loop Para cada item adicionado
+        A1->>P1: adicionaItem(idProduto, quantidade)
+        P1->>P2: adicionarItemNaEncomenda(idProduto, quantidade)
+        P2->>P3: adicionarItem(produto, quantidade)
+        Note right of P3: A encomenda recalcula seu valor total internamente.
+        P3-->>P2: valorTotalAtualizado
+        P2-->>P1: atualizarCarrinho(valorTotal)
+        P1-->>A1: Exibe o valor total atualizado
+    end
+
+    A1->>P1: Clica em "Finalizar Pedido"
+    P1->>P2: finalizarPedido()
+    P2->>P3: validarRegrasNegocio()
+    Note over P3: Verifica se picolés >= 80 ou se tem balde.
+    P3-->>P2: resultadoValidacao
+
+    alt Validação bem-sucedida
+        P2->>P5: listarCarrinhosDisponiveis()
+        P5-->>P2: listaDeCarrinhos
+        P2-->>P1: exibirPaginaResumo(dadosEncomenda, listaDeCarrinhos)
+        P1-->>A1: Mostra resumo e solicita dados finais
+
+        A1->>P1: preencheDetalhes(local, pagto, carrinho)
+        P1->>P2: processarDetalhesFinais(local, pagto, carrinho)
+        P2->>P5: calcularFrete(local)
+        P5-->>P2: valorFrete
+        P2->>P3: setFrete(valorFrete)
+        Note right of P2: Controlador calcula o desconto baseado na forma de pagamento.
+        P2->>P3: setDesconto(valorDesconto)
+        P2-->>P1: atualizarValorFinal(novoTotal)
+        P1-->>A1: Mostra o valor final com frete e desconto
+
+        A1->>P1: Clica em "Confirmar Encomenda"
+        P1->>P2: salvarEncomenda()
+        P2->>P3: setStatus("Pendente")
+        P2->>P6: salvar(encomenda)
+        P6-->>P2: sucesso
+        P2-->>P1: exibirConfirmacao(idEncomenda)
+        P1-->>A1: Mostra mensagem "Pedido realizado com sucesso!"
+
+    else Validação falhou
+        P2-->>P1: exibirErroValidacao(mensagem)
+        P1-->>A1: Mostra mensagem de erro (Ex: "Mínimo de 80 picolés não atingido")
+    end
+
+
+Cenario 1.2: Funcionário/Owner Visualiza Próximas Encomendas
+sequenceDiagram
+    actor A1 as "Funcionário / Owner"
+    participant P1 as ":InterfacePortal"
+    participant P2 as ":ControladorEncomenda"
+    participant P3 as ":RepositorioEncomenda"
+
+    autonumber
+
+    A1->>P1: Acessa a página inicial do portal interno
+    Note over A1, P1: Ocorre após o login ou ao navegar para o painel principal.
+
+    P1->>P2: getProximasEncomendas()
+    Note right of P2: Controlador define o período de busca (ex: hoje até os próximos 7 dias) e o status a ser buscado (ex: 'Pendente').
+
+    P2->>P3: buscarPorPeriodoEStatus(dataInicio, dataFim, "Pendente")
+    P3-->>P2: listaDeEncomendas
+
+    P2-->>P1: exibirListaEncomendas(listaDeEncomendas)
+    P1-->>A1: Mostra painel com as encomendas agendadas para os próximos dias
+
+
+Cenário 2.1: Funcionário solicita folga
+sequenceDiagram
+    actor A1 as Funcionario
+    participant P1 as :InterfacePortal
+    participant P2 as :ControladorFolga
+    participant P3 as :RepositorioFolga
+    participant P4 as :AgendamentoFolga
+
+    autonumber
+
+    A1->>P1: Clica em "Solicitar Folgas"
+    P1->>P2: getDomingosDisponiveis(idFuncionario)
+    Note right of P2: Controlador verifica regras (1/mês, >7 dias de antecedência).
+    P2-->>P1: listaDeDatas
+    P1-->>A1: Exibe calendário com domingos disponíveis
+
+    A1->>P1: Escolhe uma data e clica em "Solicitar"
+    P1->>P2: criarSolicitacaoFolga(idFuncionario, data)
+    P2->>P4: new(idFuncionario, data, "Solicitada")
+    Note over P4: Um novo objeto AgendamentoFolga é criado com status "Solicitada".
+    P2->>P3: salvar(agendamentoFolga)
+    P3-->>P2: sucesso
+    P2-->>P1: exibirConfirmacao()
+    P1-->>A1: Mostra mensagem "Solicitação enviada para aprovação!"
+
+
+Cenário 2.2: Owner aprova folga
+sequenceDiagram
+    actor A1 as Owner
+    participant P1 as ":InterfacePortal"
+    participant P2 as ":ControladorFolga"
+    participant P3 as ":RepositorioFolga"
+    actor A2 as Funcionario
+
+    autonumber
+
+    A1->>P1: Acessa a tela "Gerenciar Folgas"
+    P1->>P2: listarSolicitacoesPendentes()
+    P2->>P3: buscarPorStatus("Solicitada")
+    P3-->>P2: listaDeSolicitacoes
+    Note right of P2: Controlador analisa a lista e adiciona um alerta se houver mais de uma solicitação para o mesmo dia.
+    P2-->>P1: exibirLista(solicitacoesComAlertas)
+    P1-->>A1: Mostra a lista de pedidos com alertas de conflito
+
+    alt Owner decide Aprovar
+        A1->>P1: Clica em "Aprovar" para uma solicitação
+        P1->>P2: aprovarFolga(idAgendamento)
+        P2->>P3: buscarPorId(idAgendamento)
+        P3-->>P2: agendamento
+        P2->>P3: atualizarStatus(idAgendamento, "Aprovada")
+        P3-->>P2: sucesso
+        P2-->>P1: exibirSucesso()
+        P1-->>A1: Atualiza a tela, mostrando o pedido como aprovado
+        P2-->>A2: notificarAprovacao("Sua folga foi aprovada!")
+
+    else Owner decide Recusar
+        A1->>P1: Clica em "Recusar" para uma solicitação
+        P1->>P2: recusarFolga(idAgendamento, motivo)
+        P2->>P3: atualizarStatus(idAgendamento, "Recusada")
+        P3-->>P2: sucesso
+        P2-->>P1: exibirSucesso()
+        P1-->>A1: Atualiza a tela, removendo o pedido
+        P2-->>A2: notificarRecusa("Sua folga foi recusada. Por favor, escolha outra data.")
+    end
+
+
+Cenário 3: Owner Cadastra uma Atividade para um Funcionário
+sequenceDiagram
+    actor A1 as Owner
+    participant P1 as ":InterfacePortal"
+    participant P2 as ":ControladorAtividade"
+    participant P3 as ":RepositorioAtividade"
+    participant P4 as ":Atividade"
+    actor A2 as Funcionario
+
+    autonumber
+
+    A1->>P1: Acessa "Calendário de Atividades" e clica em "Nova Atividade"
+    P1-->>A1: Exibe formulário de criação de atividade
+
+    A1->>P1: Preenche dados (título, desc, recorrência) e seleciona funcionários
+    A1->>P1: Clica em "Salvar Atividade"
+    P1->>P2: criarAtividade(dadosFormulario)
+    
+    P2->>P4: new(dados)
+    Note over P4: Um novo objeto Atividade é criado com os detalhes fornecidos (título, descrição, regras de recorrência).
+    P2->>P4: atribuirFuncionarios(listaDeIds)
+    
+    P2->>P3: salvar(atividade)
+    P3-->>P2: sucesso
+    P2-->>P1: exibirConfirmacao()
+    P1-->>A1: Mostra mensagem "Atividade cadastrada e atribuída com sucesso!"
+    P2-->>A2: notificarNovaAtividade("Você tem uma nova atividade atribuída.")
+
+
+Cenário 4: Cliente Visualiza e Repete Encomenda
+sequenceDiagram
+    actor A1 as Cliente
+    participant P1 as ":InterfacePortal"
+    participant P2 as ":ControladorUsuario"
+    participant P3 as ":ControladorEncomenda"
+    participant P4 as ":RepositorioEncomenda"
+    participant P5 as ":Encomenda"
+    participant P6 as ":ServicoExterno"
+
+    autonumber
+
+    --- Parte 1: Visualizar Histórico ---
+    A1->>P1: Acessa "Meu Perfil" e clica em "Histórico de Pedidos"
+    P1->>P2: getHistoricoPedidos(idCliente)
+    P2->>P4: buscarPorCliente(idCliente)
+    P4-->>P2: listaDeEncomendasAnteriores
+    P2-->>P1: exibirHistorico(lista)
+    P1-->>A1: Mostra a lista de todos os pedidos já feitos
+
+    --- Parte 2: Iniciar a Repetição do Pedido ---
+    A1->>P1: Clica no botão "Repetir Pedido" de uma encomenda específica
+    P1->>P3: iniciarEncomendaAPartirDe(idEncomendaAntiga)
+    P3->>P4: buscarPorId(idEncomendaAntiga)
+    P4-->>P3: dadosEncomendaAntiga
+    Note right of P3: Controlador cria uma nova encomenda e pré-popula com os itens da encomenda antiga.
+    P3-->>P1: exibirPaginaResumo(novaEncomendaPreenchida)
+    P1-->>A1: Mostra a tela de resumo para confirmação/alteração
+
+    --- Parte 3: Etapas Finais da Encomenda (Substituindo o 'ref') ---
+    Note over A1, P6: O fluxo agora segue as etapas de finalização de uma nova encomenda.
+
+    A1->>P1: Confirma/altera detalhes e preenche dados (local, pagto, carrinho)
+    P1->>P3: processarDetalhesFinais(local, pagto, carrinho)
+    
+    P3->>P6: calcularFrete(local)
+    P6-->>P3: valorFrete
+    P3->>P5: setFrete(valorFrete)
+    
+    Note right of P3: Controlador calcula o desconto baseado na forma de pagamento.
+    P3->>P5: setDesconto(valorDesconto)
+    
+    P3-->>P1: atualizarValorFinal(novoTotal)
+    P1-->>A1: Mostra o valor final com frete e desconto
+
+    A1->>P1: Clica em "Confirmar Encomenda"
+    P1->>P3: salvarEncomenda()
+    P3->>P5: setStatus("Pendente")
+    P3->>P4: salvar(encomenda)
+    P4-->>P3: sucesso
+    P3-->>P1: exibirConfirmacao(idEncomenda)
+    P1-->>A1: Mostra mensagem "Pedido realizado com sucesso!"
+
+DIAGRAMA FINAL COMPLETO
+sequenceDiagram
+    --- Declaração de Todos os Atores e Participantes do Sistema ---
+    actor ACLI as Cliente
+    actor AFUN as Funcionario
+    actor AOWN as Owner
+
+    participant P_INT as ":InterfacePortal"
+    participant P_CUSU as ":ControladorUsuario"
+    participant P_CENC as ":ControladorEncomenda"
+    participant P_CFOL as ":ControladorFolga"
+    participant P_CATV as ":ControladorAtividade"
+    participant P_RENC as ":RepositorioEncomenda"
+    participant P_RFOL as ":RepositorioFolga"
+    participant P_RATV as ":RepositorioAtividade"
+    participant P_ENCO as ":Encomenda"
+    participant P_PROD as ":Produto"
+    participant P_AFOL as ":AgendamentoFolga"
+    participant P_ATIV as ":Atividade"
+    participant P_SERV as ":ServicoExterno"
+
+    --- CENÁRIO 1: CLIENTE FAZ UMA ENCOMENDA ---
+    Note over ACLI, P_SERV: --- CENÁRIO 1: CLIENTE FAZ UMA ENCOMENDA ---
+
+    ACLI->>P_INT: Clica em "Fazer Encomenda"
+    P_INT->>P_CENC: iniciarNovaEncomenda()
+    P_CENC->>P_PROD: listarDisponiveis()
+    P_PROD-->>P_CENC: listaDeProdutos
+    P_CENC-->>P_INT: exibirPaginaDeProdutos(lista)
+    P_INT-->>ACLI: Mostra a lista de produtos
+
+    loop Para cada item adicionado
+        ACLI->>P_INT: adicionaItem(idProduto, quantidade)
+        P_INT->>P_CENC: adicionarItemNaEncomenda(idProduto, quantidade)
+        P_CENC->>P_ENCO: adicionarItem(produto, quantidade)
+        P_ENCO-->>P_CENC: valorTotalAtualizado
+        P_CENC-->>P_INT: atualizarCarrinho(valorTotal)
+        P_INT-->>ACLI: Exibe o valor total atualizado
+    end
+
+    ACLI->>P_INT: Clica em "Finalizar Pedido"
+    P_INT->>P_CENC: finalizarPedido()
+    P_CENC->>P_ENCO: validarRegrasNegocio()
+    P_ENCO-->>P_CENC: resultadoValidacao
+
+    alt Validação bem-sucedida (Nova Encomenda)
+        P_CENC->>P_SERV: listarCarrinhosDisponiveis()
+        P_SERV-->>P_CENC: listaDeCarrinhos
+        P_CENC-->>P_INT: exibirPaginaResumo(dadosEncomenda, listaDeCarrinhos)
+        P_INT-->>ACLI: Mostra resumo e solicita dados finais
+        ACLI->>P_INT: preencheDetalhes(local, pagto, carrinho)
+        P_INT->>P_CENC: processarDetalhesFinais(local, pagto, carrinho)
+        P_CENC->>P_SERV: calcularFrete(local)
+        P_SERV-->>P_CENC: valorFrete
+        P_CENC->>P_ENCO: setFrete(valorFrete)
+        P_CENC->>P_ENCO: setDesconto(valorDesconto)
+        P_CENC-->>P_INT: atualizarValorFinal(novoTotal)
+        P_INT-->>ACLI: Mostra o valor final com frete e desconto
+        ACLI->>P_INT: Clica em "Confirmar Encomenda"
+        P_INT->>P_CENC: salvarEncomenda()
+        P_CENC->>P_ENCO: setStatus("Pendente")
+        P_CENC->>P_RENC: salvar(encomenda)
+        P_RENC-->>P_CENC: sucesso
+        P_CENC-->>P_INT: exibirConfirmacao(idEncomenda)
+        P_INT-->>ACLI: Mostra mensagem "Pedido realizado com sucesso!"
+    else Validação falhou
+        P_CENC-->>P_INT: exibirErroValidacao(mensagem)
+        P_INT-->>ACLI: Mostra mensagem de erro
+    end
+
+    --- CENÁRIO 2: FUNCIONÁRIO/OWNER VISUALIZA PRÓXIMAS ENCOMENDAS ---
+    Note over AFUN, P_SERV: --- CENÁRIO 2: FUNCIONÁRIO/OWNER VISUALIZA PRÓXIMAS ENCOMENDAS ---
+
+    AFUN->>P_INT: Acessa a página inicial do portal interno
+    P_INT->>P_CENC: getProximasEncomendas()
+    P_CENC->>P_RENC: buscarPorPeriodoEStatus(dataInicio, dataFim, "Pendente")
+    P_RENC-->>P_CENC: listaDeEncomendas
+    P_CENC-->>P_INT: exibirListaEncomendas(listaDeEncomendas)
+    P_INT-->>AFUN: Mostra painel com as encomendas agendadas
+
+    --- CENÁRIO 3: FUNCIONÁRIO SOLICITA FOLGA ---
+    Note over AFUN, P_SERV: --- CENÁRIO 3: FUNCIONÁRIO SOLICITA FOLGA ---
+
+    AFUN->>P_INT: Clica em "Solicitar Folgas"
+    P_INT->>P_CFOL: getDomingosDisponiveis(idFuncionario)
+    P_CFOL-->>P_INT: listaDeDatas
+    P_INT-->>AFUN: Exibe calendário com domingos disponíveis
+    AFUN->>P_INT: Escolhe uma data e clica em "Solicitar"
+    P_INT->>P_CFOL: criarSolicitacaoFolga(idFuncionario, data)
+    P_CFOL->>P_AFOL: new(idFuncionario, data, "Solicitada")
+    P_CFOL->>P_RFOL: salvar(agendamentoFolga)
+    P_RFOL-->>P_CFOL: sucesso
+    P_CFOL-->>P_INT: exibirConfirmacao()
+    P_INT-->>AFUN: Mostra mensagem "Solicitação enviada para aprovação!"
+
+    --- CENÁRIO 4: OWNER APROVA/RECUSA FOLGA ---
+    Note over AOWN, P_SERV: --- CENÁRIO 4: OWNER APROVA/RECUSA FOLGA ---
+
+    AOWN->>P_INT: Acessa a tela "Gerenciar Folgas"
+    P_INT->>P_CFOL: listarSolicitacoesPendentes()
+    P_CFOL->>P_RFOL: buscarPorStatus("Solicitada")
+    P_RFOL-->>P_CFOL: listaDeSolicitacoes
+    P_CFOL-->>P_INT: exibirLista(solicitacoesComAlertas)
+    P_INT-->>AOWN: Mostra a lista de pedidos com alertas de conflito
+
+    alt Owner decide Aprovar
+        AOWN->>P_INT: Clica em "Aprovar" para uma solicitação
+        P_INT->>P_CFOL: aprovarFolga(idAgendamento)
+        P_CFOL->>P_RFOL: atualizarStatus(idAgendamento, "Aprovada")
+        P_RFOL-->>P_CFOL: sucesso
+        P_CFOL-->>AFUN: notificarAprovacao("Sua folga foi aprovada!")
+    else Owner decide Recusar
+        AOWN->>P_INT: Clica em "Recusar" para uma solicitação
+        P_INT->>P_CFOL: recusarFolga(idAgendamento, motivo)
+        P_CFOL->>P_RFOL: atualizarStatus(idAgendamento, "Recusada")
+        P_RFOL-->>P_CFOL: sucesso
+        P_CFOL-->>AFUN: notificarRecusa("Sua folga foi recusada.")
+    end
+
+    --- CENÁRIO 5: OWNER CADASTRA ATIVIDADE ---
+    Note over AOWN, P_SERV: --- CENÁRIO 5: OWNER CADASTRA ATIVIDADE ---
+
+    AOWN->>P_INT: Clica em "Nova Atividade"
+    P_INT-->>AOWN: Exibe formulário de criação
+    AOWN->>P_INT: Preenche dados e clica em "Salvar Atividade"
+    P_INT->>P_CATV: criarAtividade(dadosFormulario)
+    P_CATV->>P_ATIV: new(dados)
+    P_CATV->>P_ATIV: atribuirFuncionarios(listaDeIds)
+    P_CATV->>P_RATV: salvar(atividade)
+    P_RATV-->>P_CATV: sucesso
+    P_CATV-->>P_INT: exibirConfirmacao()
+    P_INT-->>AOWN: Mostra mensagem "Atividade cadastrada!"
+    P_CATV-->>AFUN: notificarNovaAtividade("Você tem uma nova atividade.")
+
+    --- CENÁRIO 6: CLIENTE VISUALIZA E REPETE ENCOMENDA ---
+    Note over ACLI, P_SERV: --- CENÁRIO 6: CLIENTE VISUALIZA E REPETE ENCOMENDA ---
+
+    ACLI->>P_INT: Acessa "Meu Perfil" e clica em "Histórico de Pedidos"
+    P_INT->>P_CUSU: getHistoricoPedidos(idCliente)
+    P_CUSU->>P_RENC: buscarPorCliente(idCliente)
+    P_RENC-->>P_CUSU: listaDeEncomendasAnteriores
+    P_CUSU-->>P_INT: exibirHistorico(lista)
+    P_INT-->>ACLI: Mostra a lista de todos os pedidos já feitos
+    ACLI->>P_INT: Clica no botão "Repetir Pedido" de uma encomenda específica
+    P_INT->>P_CENC: iniciarEncomendaAPartirDe(idEncomendaAntiga)
+    P_CENC->>P_RENC: buscarPorId(idEncomendaAntiga)
+    P_RENC-->>P_CENC: dadosEncomendaAntiga
+    P_CENC-->>P_INT: exibirPaginaResumo(novaEncomendaPreenchida)
+    P_INT-->>ACLI: Mostra a tela de resumo para confirmação/alteração
+    Note over ACLI, P_SERV: O fluxo a partir daqui segue as etapas de finalização do Cenário 1.
+    ACLI->>P_INT: Confirma/altera detalhes e preenche dados (local, pagto, carrinho)
+    P_INT->>P_CENC: processarDetalhesFinais(local, pagto, carrinho)
+    P_CENC->>P_SERV: calcularFrete(local)
+    P_SERV-->>P_CENC: valorFrete
+    P_CENC->>P_ENCO: setFrete(valorFrete)
+    P_CENC-->>P_INT: atualizarValorFinal(novoTotal)
+    P_INT-->>ACLI: Mostra o valor final com frete e desconto
+    ACLI->>P_INT: Clica em "Confirmar Encomenda"
+    P_INT->>P_CENC: salvarEncomenda()
+    P_CENC->>P_ENCO: setStatus("Pendente")
+    P_CENC->>P_RENC: salvar(encomenda)
+    P_RENC-->>P_CENC: sucesso
+    P_CENC-->>P_INT: exibirConfirmacao(idEncomenda)
+    P_INT-->>ACLI: Mostra mensagem "Pedido realizado com sucesso!"
