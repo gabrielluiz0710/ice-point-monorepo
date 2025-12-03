@@ -2,16 +2,13 @@ import React, { useEffect } from 'react';
 
 function Depoimentos() {
   useEffect(() => {
-    // Cria uma nova tag script para o script da Elfsight
     const script = document.createElement('script');
     script.src = 'https://static.elfsight.com/platform/platform.js';
     script.setAttribute('data-use-service-core', '');
     script.defer = true;
 
-    // Adiciona o script ao documento
     document.body.appendChild(script);
 
-    // Limpeza: Remove o script quando o componente for desmontado
     return () => {
       document.body.removeChild(script);
     };
